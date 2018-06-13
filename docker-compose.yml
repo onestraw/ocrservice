@@ -1,0 +1,48 @@
+version: "3"
+services:
+  rabbitmq:
+    image: rabbitmq:latest
+    command: rabbitmq-server
+    ports:
+      - "5672:5672"
+  nginx:
+    image: nginx:latest
+    command: nginx -g "daemon off;"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - "10008:10008"
+    depends_on:
+      - backend-A
+      - backend-B
+  worker-A:
+    image: onestraw/ocrservice
+    command: worker --rabbitmq=amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+  worker-B:
+    image: onestraw/ocrservice
+    command: worker --rabbitmq=amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      - rabbitmq
+  backend-A:
+    image: onestraw/ocrservice
+    command: backend --addr=:10002 --rabbitmq=amqp://guest:guest@rabbitmq:5672/
+    ports:
+      - "10002:10002"
+    depends_on:
+      - rabbitmq
+  backend-B:
+    image: onestraw/ocrservice
+    command: backend --addr=:10003 --rabbitmq=amqp://guest:guest@rabbitmq:5672/
+    ports:
+      - "10003:10003"
+    depends_on:
+      - rabbitmq
+  frontend:
+    image: onestraw/ocrservice
+    command: frontend --backend.addr=nginx:10008
+    ports:
+      - "10001:10001"
+    depends_on:
+      - nginx
