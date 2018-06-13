@@ -53,7 +53,12 @@
 
 ### Play
 
-    docker-compose up
+    docker-compose up -d
+    # 浏览器访问`127.0.0.1:10001` or
+    cd tests/ && ./runtest.sh
+    # ...
+    docker-compose logs
+    docker-compose down
 
 ## Todo
 
