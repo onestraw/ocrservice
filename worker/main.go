@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/otiai10/gosseract"
 	log "github.com/sirupsen/logrus"
@@ -74,8 +75,18 @@ func worker(data []byte) ([]byte, error) {
 func main() {
 	flag.Parse()
 
-	conn, err := amqp.Dial(*flagRabbitMQ)
-	failOnError(err, "Failed to connect to RabbitMQ")
+	var err error
+	var conn *amqp.Connection
+	waitSecond := 1
+	for i := 1; i <= 10; i++ {
+		conn, err = amqp.Dial(*flagRabbitMQ)
+		if err == nil {
+			break
+		}
+		log.Errorf("Failed to connect to RabbitMQ, error: %v, retry: %d", err, i)
+		time.Sleep(time.Duration(waitSecond) * time.Second)
+		waitSecond *= 2
+	}
 	defer conn.Close()
 
 	ch, err := conn.Channel()
