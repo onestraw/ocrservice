@@ -77,15 +77,21 @@ func main() {
 
 	var err error
 	var conn *amqp.Connection
+	maxTryNum := 9
 	waitSecond := 1
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= maxTryNum; i++ {
+		time.Sleep(time.Duration(waitSecond) * time.Second)
+		log.Infof("#%d Try to connect to RabbitMQ...", i)
 		conn, err = amqp.Dial(*flagRabbitMQ)
 		if err == nil {
 			break
 		}
-		log.Errorf("Failed to connect to RabbitMQ, error: %v, retry: %d", err, i)
-		time.Sleep(time.Duration(waitSecond) * time.Second)
+		log.Errorf("Failed to connect to RabbitMQ, error: %v", err)
 		waitSecond *= 2
+	}
+	if conn == nil {
+		log.Errorf("Failed to connect to RabbitMQ %d times, exit", maxTryNum)
+		return
 	}
 	defer conn.Close()
 
