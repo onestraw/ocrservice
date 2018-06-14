@@ -4,7 +4,7 @@
 
 - frontend 应用: UI完整拷贝自otiai10/ocrserver
 - 负载均衡器: Nginx
-- backend 业务层: Gin框架
+- backend 业务层: Gin
 - worker 计算层: Tesseract
 - MQ 消息队列: RabbitMQ
 
@@ -33,7 +33,7 @@
                   v              v   |               v
               - - - - - - - - - - - - - - - - - - - - - - - -
               |                 | | | |                     |
-              |  RabbitMQ       |q| |q|       RabbitMQ      |
+              |     RabbitMQ    |q| |q|        RPC          |
               |                 | | | |                     |
               - - - - - - - - - - - - - - - - - - - - - - - -
                   ^              |   ^            ^        ^ 
@@ -54,7 +54,7 @@
 ### Play
 
     docker-compose up -d
-    # 浏览器访问`127.0.0.1:10001` or
+    # view in browser: 127.0.0.1:10001
     cd tests/ && ./runtest.sh
     # ...
     docker-compose logs
@@ -62,6 +62,7 @@
 
 ## Todo
 
+- 支持PDF
 - 添加用户认证
 - 持久化存储
 - 高可用
