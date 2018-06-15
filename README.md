@@ -60,6 +60,8 @@
     docker-compose logs
     docker-compose down
 
+![ocrservice-ui](./ocrservice-ui.jpg)
+
 ## Todo
 
 - 支持PDF
